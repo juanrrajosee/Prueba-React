@@ -62,7 +62,7 @@ export default function RegistroPage() {
                   <option value="maestro">Maestro de criaturas</option>
                   <option value="explorador">Explorador</option>
                 </select>
-                <span className={styles.selectIcon}>⌄</span>
+                <span className={styles.selectIcon}></span>
               </div>
             </label>
 
