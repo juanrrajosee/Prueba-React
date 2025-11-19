@@ -1,0 +1,623 @@
+/* ================================
+   VARIABLES — Colores y fuentes
+================================ */
+
+$primary: #9c5ce1;
+$primary-hover: #874acb;
+$secondary: #c77e01;
+$dark: #222222;
+$light: #777777;
+
+/* ================================
+   LAYOUT GENERAL
+================================ */
+
+.page {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100vh;
+  background: #fffdfb;
+}
+
+/* Panel lateral con la imagen */
+.imagePanel {
+  background-image: url("/maluma.png"); 
+  background-size: cover;
+  background-position: center;
+}
+
+/* Panel principal */
+.mainPanel {
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem 4rem;
+}
+
+/* ================================
+   CABECERA Y NAVEGACIÓN
+================================ */
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 3rem;
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--font-sedan-sc);
+}
+
+.navItem {
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $dark;
+  padding: 0.7rem 1.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navItemActive {
+  background: #f2e8ff;
+  color: $dark;
+}
+
+.navItemLink {
+  text-decoration: none;
+}
+
+/* ================================
+   TIPOGRAFÍA Y CONTENIDO
+================================ */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.titles {
+  max-width: 640px;
+  margin-bottom: 4rem;
+}
+
+.mainTitle {
+  font-family: var(--font-sedan-sc);
+  font-size: 2.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $secondary;
+  margin-bottom: 1.2rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-sedan-sc);
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $secondary;
+  margin-bottom: 1.2rem;
+}
+
+.sectionText {
+  font-family: var(--font-sedan);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: $light;
+}
+
+/* ================================
+   ESTADO VACÍO
+================================ */
+
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem;
+}
+
+.emptyText {
+  font-family: var(--font-sedan);
+  font-size: 0.95rem;
+  text-align: center;
+  color: $dark;
+}
+
+/* ================================
+   BOTÓN
+================================ */
+
+.button {
+  padding: 1rem 3.5rem;
+  border-radius: 999px;
+  border: none;
+  background: $primary;
+  color: white;
+
+  font-family: var(--font-sedan-sc);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+
+  cursor: pointer;
+  box-shadow: 0 12px 25px rgba(156, 92, 225, 0.35);
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: $primary-hover;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* ================================
+   CREADOR DE CRIATURAS MÁGICAS
+================================ */
+
+.creator {
+  margin-top: 1rem;
+}
+
+.creatorTitle {
+  text-align: center;
+  font-family: var(--font-sedan-sc);
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $secondary;
+  margin-bottom: 2rem;
+}
+
+.creatorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Fila de dos columnas */
+.creatorRow {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 1.5rem;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.creatorField,
+.creatorFieldWide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.creatorFieldWide {
+  grid-column: 1 / 2;
+}
+
+.creatorFieldSmall {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.creatorLabel {
+  font-family: var(--font-sedan-sc);
+  font-size: 0.8rem;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.creatorInput {
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: #f5f1ee;
+  font-size: 0.95rem;
+  color: $dark;
+
+  &::placeholder {
+    color: #b9b0ad;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(156, 92, 225, 0.25);
+    background: #f9f6f3;
+  }
+}
+
+/* Select con icono reutilizando estilos del registro */
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.selectIcon {
+  position: absolute;
+  right: 1.3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1rem;
+  color: #b9b0ad;
+}
+
+/* Checkboxes personalizados */
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 0.3rem;
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+  color: $dark;
+}
+
+.checkboxInput {
+  display: none;
+}
+
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid $primary;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Cuando el input está checked, pintamos el interior */
+.checkboxInput:checked + .checkboxCustom {
+  background: $primary;
+}
+
+.checkboxInput:checked + .checkboxCustom::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: white;
+}
+
+/* Botón centrado */
+.creatorButtonWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1000px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .imagePanel {
+    display: none;
+  }
+
+  .mainPanel {
+    padding: 2rem 1.5rem;
+  }
+
+  .header {
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .titles {
+    margin-bottom: 3rem;
+  }
+}
+
+/* Asumo que ya tienes las VARIABLES, LAYOUT GENERAL, NAV y TITULOS
+   iguales a las de cuidador, así que añado solo lo nuevo. */
+
+/* ================================
+   BOTONES Y DISTRIBUCIÓN
+================================ */
+
+.topRow {
+  margin-bottom: 2rem;
+}
+
+.mainButton {
+  padding: 0.9rem 2.5rem;
+  border-radius: 999px;
+  border: none;
+  background: $primary;
+  color: white;
+  font-family: var(--font-sedan-sc);
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 12px 25px rgba(156, 92, 225, 0.35);
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    background: $primary-hover;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2.5rem;
+}
+
+/* ================================
+   PANEL DE FILTRO
+================================ */
+
+.filterPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filterTitle {
+  font-family: var(--font-sedan-sc);
+  font-size: 1.2rem;
+  color: $secondary;
+}
+
+.filterSubtitle {
+  font-family: var(--font-sedan-sc);
+  font-size: 0.9rem;
+  color: $secondary;
+}
+
+.filterChecks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+  color: $dark;
+}
+
+.checkboxInput {
+  display: none;
+}
+
+.checkboxCustom {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid $primary;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.checkboxInput:checked + .checkboxCustom {
+  background: $primary;
+}
+
+.checkboxInput:checked + .checkboxCustom::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: white;
+}
+
+.confirmButton {
+  margin-top: 1.5rem;
+  padding: 0.8rem 2.3rem;
+  border-radius: 999px;
+  border: none;
+  background: $primary;
+  color: white;
+  font-family: var(--font-sedan-sc);
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ================================
+   BUSCADOR Y TABLA
+================================ */
+
+.tableSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.searchBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.searchLabel {
+  font-family: var(--font-sedan-sc);
+  font-size: 0.8rem;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.searchInput {
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: #f5f1ee;
+  font-size: 0.95rem;
+  color: $dark;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+}
+
+.table thead th {
+  padding: 0.8rem 0.4rem;
+  text-align: left;
+  color: $primary;
+  font-family: var(--font-sedan-sc);
+  font-weight: 400;
+}
+
+.table tbody td {
+  padding: 0.8rem 0.4rem;
+  border-top: 1px solid #e3d4ff;
+  color: $dark;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 1px solid #e3d4ff;
+}
+
+.emptyRow {
+  text-align: center;
+  padding: 1rem;
+  color: $light;
+}
+
+.actionCell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.iconButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ================================
+   FORMULARIO CREAR / EDITAR
+================================ */
+
+.creator {
+  margin-top: 3rem;
+}
+
+.creatorTitle {
+  text-align: center;
+  font-family: var(--font-sedan-sc);
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $secondary;
+  margin-bottom: 2rem;
+}
+
+.creatorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.creatorRow {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 1.5rem;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.creatorField,
+.creatorFieldWide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.creatorFieldWide {
+  grid-column: 1 / 2;
+}
+
+.creatorFieldSmall {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.creatorLabel {
+  font-family: var(--font-sedan-sc);
+  font-size: 0.8rem;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.creatorInput {
+  padding: 0.9rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: #f5f1ee;
+  font-size: 0.95rem;
+  color: $dark;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 0.3rem;
+}
+
+.creatorButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.button {
+  @extend .mainButton;
+}
+
+.buttonSecondary {
+  @extend .mainButton;
+  background: #f5f1ee;
+  color: $dark;
+  box-shadow: none;
+
+  &:hover {
+    background: #ebe3dd;
+  }
+}
