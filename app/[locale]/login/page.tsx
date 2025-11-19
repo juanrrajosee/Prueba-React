@@ -1,6 +1,12 @@
+"use client";
+
 import styles from "./login.module.scss";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function LoginPage() {
+  const { locale } = useParams() as { locale: string };
+
   return (
     <div className={styles.page}>
       {/* Panel de la imagen */}
@@ -41,7 +47,8 @@ export default function LoginPage() {
           </form>
 
           <p className={styles.register}>
-            ¿No tienes cuenta? Regístrate como maestro o cuidador
+            ¿No tienes cuenta?{" "}
+            <Link href={`/${locale}/registro`}>Regístrate en el refugio</Link>
           </p>
         </div>
       </div>

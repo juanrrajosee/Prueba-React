@@ -139,7 +139,17 @@ $light: #777777;
   font-family: var(--font-sedan);
   font-size: 0.95rem;
   color: $light;
+
+  a {
+    color: $primary;        // 🔹 morado
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
+
 
 /* ================================
    RESPONSIVE
