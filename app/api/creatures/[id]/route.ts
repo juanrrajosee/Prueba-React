@@ -1,4 +1,3 @@
-// app/api/creatures/[id]/route.ts
 import { NextResponse } from "next/server";
 import {
   getCriaturaDeUsuario,
@@ -7,7 +6,7 @@ import {
   TipoCriatura,
 } from "@/lib/creatures";
 
-const currentUserId = "demo-user-1"; // TODO: usuario real con next-auth
+const currentUserId = "demo-user-1";
 
 export async function GET(
   _req: Request,
@@ -26,16 +25,18 @@ export async function PUT(
 ) {
   try {
     const body = await req.json();
-    const { nombre, tipo, nivelPoder } = body as {
+    const { nombre, tipo, nivelPoder, entrenada } = body as {
       nombre?: string;
       tipo?: TipoCriatura;
       nivelPoder?: string;
+      entrenada?: boolean;
     };
 
     const actualizada = actualizarCriatura(params.id, currentUserId, {
       nombre,
       tipo,
       nivelPoder,
+      entrenada,
     });
 
     if (!actualizada) {

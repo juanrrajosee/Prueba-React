@@ -10,6 +10,7 @@ export interface Criatura {
   nombre: string;
   tipo: TipoCriatura;
   nivelPoder: string; // "I", "II", "Maestro arcano", etc.
+  entrenada: boolean;
 }
 
 // "Base de datos" en memoria (se pierde al reiniciar)

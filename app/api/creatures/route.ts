@@ -1,4 +1,3 @@
-// app/api/creatures/route.ts
 import { NextResponse } from "next/server";
 import {
   getCriaturasDeUsuario,
@@ -6,8 +5,7 @@ import {
   TipoCriatura,
 } from "@/lib/creatures";
 
-// De momento simulamos un usuario logueado fijo
-const currentUserId = "demo-user-1"; // TODO: reemplazar por usuario real
+const currentUserId = "demo-user-1"; // TODO: usuario real con next-auth
 
 export async function GET() {
   const lista = getCriaturasDeUsuario(currentUserId);
@@ -18,10 +16,11 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { nombre, tipo, nivelPoder } = body as {
+    const { nombre, tipo, nivelPoder, entrenada } = body as {
       nombre?: string;
       tipo?: TipoCriatura;
       nivelPoder?: string;
+      entrenada?: boolean;
     };
 
     if (!nombre || !tipo) {
@@ -36,6 +35,7 @@ export async function POST(req: Request) {
       nombre,
       tipo,
       nivelPoder: nivelPoder || "I",
+      entrenada: !!entrenada,
     });
 
     return NextResponse.json(nueva, { status: 201 });
