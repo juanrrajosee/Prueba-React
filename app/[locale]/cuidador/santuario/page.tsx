@@ -235,7 +235,7 @@ export default function CuidadorSantuarioPage() {
                           <td>{c.nivelPoder}</td>
                           <td>{c.entrenada ? "Sí" : "No"}</td>
                           <td className={styles.actionCell}>
-                            {/* CUIDADOR: solo editar, sin eliminar */}
+                            {}
                             <button
                               type="button"
                               className={styles.iconButton}

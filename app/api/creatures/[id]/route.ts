@@ -1,65 +1,143 @@
+// app/api/creatures/[id]/route.ts
 import { NextResponse } from "next/server";
-import {
-  getCriaturaDeUsuario,
-  actualizarCriatura,
-  eliminarCriatura,
-  TipoCriatura,
-} from "@/lib/creatures";
+import prisma from "../../../../lib/prisma";
 
-const currentUserId = "demo-user-1";
-
-export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
-) {
-  const criatura = getCriaturaDeUsuario(params.id, currentUserId);
-  if (!criatura) {
-    return NextResponse.json({ error: "Criatura no encontrada" }, { status: 404 });
-  }
-  return NextResponse.json(criatura);
+function mapCreatureToApi(c: any) {
+  return {
+    id: c.id,
+    usuarioId: c.userId,
+    nombre: c.nombre,
+    tipo: c.tipo.toLowerCase(),
+    nivelPoder: c.nivelPoder,
+    entrenada: c.entrenada,
+  };
 }
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+// GET /api/creatures/:id
+export async function GET(
+  _req: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const body = await req.json();
-    const { nombre, tipo, nivelPoder, entrenada } = body as {
-      nombre?: string;
-      tipo?: TipoCriatura;
-      nivelPoder?: string;
-      entrenada?: boolean;
-    };
+    const { id } = await context.params; 
 
-    const actualizada = actualizarCriatura(params.id, currentUserId, {
-      nombre,
-      tipo,
-      nivelPoder,
-      entrenada,
+    const criatura = await prisma.creature.findUnique({
+      where: { id },
     });
 
-    if (!actualizada) {
-      return NextResponse.json({ error: "Criatura no encontrada" }, { status: 404 });
+    if (!criatura) {
+      return NextResponse.json(
+        { error: "Criatura no encontrada" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(actualizada);
+    return NextResponse.json(mapCreatureToApi(criatura));
   } catch (error) {
-    console.error(error);
+    console.error("Error en GET /api/creatures/[id]", error);
     return NextResponse.json(
-      { error: "Error al actualizar la criatura" },
+      { error: "Error al obtener la criatura" },
       { status: 500 }
     );
   }
 }
 
+// PUT /api/creatures/:id -> actualizar criatura
+export async function PUT(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params; 
+
+    const body = await req.json();
+
+    const {
+      nombre,
+      tipo,
+      nivelPoder,
+      entrenada,
+    }: {
+      nombre?: string;
+      tipo?: string;
+      nivelPoder?: string;
+      entrenada?: boolean;
+    } = body;
+
+    // Comprobamos que la criatura existe
+    const existente = await prisma.creature.findUnique({
+      where: { id },
+    });
+
+    if (!existente) {
+      return NextResponse.json(
+        { error: "Criatura no encontrada" },
+        { status: 404 }
+      );
+    }
+
+    // Construimos el objeto data solo con los campos que vengan
+    const data: any = {};
+    if (nombre !== undefined) data.nombre = nombre;
+    if (tipo !== undefined) data.tipo = tipo.toUpperCase();
+    if (nivelPoder !== undefined) data.nivelPoder = nivelPoder;
+    if (entrenada !== undefined) data.entrenada = entrenada;
+
+    const actualizada = await prisma.creature.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(mapCreatureToApi(actualizada));
+  } catch (error) {
+    console.error("Error en PUT /api/creatures/[id]", error);
+    return NextResponse.json(
+      {
+        error: "Error al actualizar la criatura",
+        detail: String(error),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/creatures/:id -> eliminar criatura
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const borrada = eliminarCriatura(params.id, currentUserId);
-  if (!borrada) {
-    return NextResponse.json({ error: "Criatura no encontrada" }, { status: 404 });
+  try {
+    const { id } = await context.params; 
+
+    await prisma.creature.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Error en DELETE /api/creatures/[id] (delete)", error);
+
+    // Fallback por si acaso
+    try {
+      const { id } = await context.params;
+
+      await prisma.creature.deleteMany({
+        where: { id },
+      });
+
+      return NextResponse.json({ ok: true });
+    } catch (error2) {
+      console.error(
+        "Error en DELETE /api/creatures/[id] (deleteMany)",
+        error2
+      );
+      return NextResponse.json(
+        {
+          error: "Error al eliminar la criatura",
+          detail: String(error2),
+        },
+        { status: 500 }
+      );
+    }
   }
-  return NextResponse.json({ ok: true });
 }

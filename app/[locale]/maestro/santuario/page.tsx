@@ -1,358 +1,383 @@
 "use client";
 
-import styles from "./santuario.module.scss";
+import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useState, FormEvent } from "react";
+import { useParams } from "next/navigation"; // 👈 NUEVO
+import styles from "./santuario.module.scss";
+import type { Criatura, TipoCriatura } from "@/lib/creatures";
 
-type CreatureType = "Dragón" | "Fénix" | "Golem" | "Grifo" | "Vampiro";
-
-type Creature = {
-  id: number;
+type FormState = {
   nombre: string;
-  tipo: CreatureType;
-  nivel: string;
-  entrenada: boolean;
+  tipo: TipoCriatura | "";
+  nivelPoder: string;
+  entrenada: "si" | "no";
 };
 
-const INITIAL_CREATURES: Creature[] = [
-  { id: 1, nombre: "Abyssaloth", tipo: "Fénix", nivel: "IV", entrenada: true },
-  { id: 2, nombre: "Luminara", tipo: "Dragón", nivel: "I", entrenada: true },
-  { id: 3, nombre: "Velokron", tipo: "Golem", nivel: "II", entrenada: false },
-  { id: 4, nombre: "Zyphra", tipo: "Vampiro", nivel: "V", entrenada: true },
-  { id: 5, nombre: "Thornclaw", tipo: "Grifo", nivel: "III", entrenada: false },
-];
-
 export default function MaestroSantuarioPage() {
-  const { locale } = useParams() as { locale: string };
+  // ================================
+  //   OBTENER LOCALE DESDE LA URL
+  // ================================
+  const params = useParams<{ locale: string }>();
+  const locale = params.locale;
 
-  const [creatures, setCreatures] = useState<Creature[]>(INITIAL_CREATURES);
-  const [selectedTypes, setSelectedTypes] = useState<CreatureType[]>([]);
-  const [searchName, setSearchName] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [criaturas, setCriaturas] = useState<Criatura[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Campos del formulario
-  const [formNombre, setFormNombre] = useState("");
-  const [formTipo, setFormTipo] = useState<CreatureType>("Fénix");
-  const [formNivel, setFormNivel] = useState("");
-  const [formEntrenada, setFormEntrenada] = useState<"si" | "no">("si");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const tipos: CreatureType[] = ["Dragón", "Fénix", "Golem", "Grifo", "Vampiro"];
-
-  const filteredCreatures = creatures.filter((c) => {
-    const matchesType =
-      selectedTypes.length === 0 || selectedTypes.includes(c.tipo);
-    const matchesName =
-      searchName.trim() === "" ||
-      c.nombre.toLowerCase().includes(searchName.toLowerCase());
-    return matchesType && matchesName;
+  const [form, setForm] = useState<FormState>({
+    nombre: "",
+    tipo: "",
+    nivelPoder: "",
+    entrenada: "si",
   });
 
-  const openCreateForm = () => {
-    setEditingId(null);
-    setFormNombre("");
-    setFormTipo("Fénix");
-    setFormNivel("");
-    setFormEntrenada("si");
-    setShowForm(true);
-  };
-
-  const openEditForm = (creature: Creature) => {
-    setEditingId(creature.id);
-    setFormNombre(creature.nombre);
-    setFormTipo(creature.tipo);
-    setFormNivel(creature.nivel);
-    setFormEntrenada(creature.entrenada ? "si" : "no");
-    setShowForm(true);
-  };
-
-  const handleFilterTypeChange = (tipo: CreatureType) => {
-    setSelectedTypes((prev) =>
-      prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]
-    );
-  };
-
-  const handleDelete = (id: number) => {
-    if (!confirm("¿Eliminar esta criatura del santuario?")) return;
-    setCreatures((prev) => prev.filter((c) => c.id !== id));
-  };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-
-    const entrenadaBool = formEntrenada === "si";
-
-    if (editingId === null) {
-      // Crear
-      const newCreature: Creature = {
-        id: Date.now(),
-        nombre: formNombre,
-        tipo: formTipo,
-        nivel: formNivel || "I",
-        entrenada: entrenadaBool,
-      };
-      setCreatures((prev) => [...prev, newCreature]);
-    } else {
-      // Editar
-      setCreatures((prev) =>
-        prev.map((c) =>
-          c.id === editingId
-            ? {
-                ...c,
-                nombre: formNombre,
-                tipo: formTipo,
-                nivel: formNivel || c.nivel,
-                entrenada: entrenadaBool,
-              }
-            : c
-        )
-      );
+  // ================================
+  //   CARGAR CRIATURAS DEL BACKEND
+  // ================================
+  useEffect(() => {
+    async function cargar() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/creatures", { cache: "no-store" });
+        if (!res.ok) throw new Error("Error al cargar criaturas");
+        const data: Criatura[] = await res.json();
+        setCriaturas(data);
+        setError(null);
+      } catch (e) {
+        console.error(e);
+        setError("No se pudieron cargar las criaturas");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    setShowForm(false);
-  };
+    cargar();
+  }, []);
+
+  // ================================
+  //   MANEJO DE FORMULARIO
+  // ================================
+
+  function abrirCrear() {
+    setEditingId(null);
+    setForm({
+      nombre: "",
+      tipo: "",
+      nivelPoder: "",
+      entrenada: "si",
+    });
+    setIsFormOpen(true);
+  }
+
+  function manejarCambio(campo: keyof FormState, valor: string) {
+    setForm((prev) => ({
+      ...prev,
+      [campo]: valor,
+    }));
+  }
+
+  async function manejarSubmit(e: FormEvent) {
+    e.preventDefault();
+
+    if (!form.nombre || !form.tipo) {
+      alert("El nombre y el tipo son obligatorios");
+      return;
+    }
+
+    const payload = {
+      nombre: form.nombre,
+      tipo: form.tipo,
+      nivelPoder: form.nivelPoder || "I",
+      entrenada: form.entrenada === "si",
+    };
+
+    try {
+      let res: Response;
+
+      if (editingId) {
+        // EDITAR
+        res = await fetch(`/api/creatures/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        // CREAR
+        res = await fetch("/api/creatures", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      if (!res.ok) {
+        console.error(await res.text());
+        alert("Error al guardar la criatura");
+        return;
+      }
+
+      const criaturaGuardada: Criatura = await res.json();
+
+      if (editingId) {
+        setCriaturas((prev) =>
+          prev.map((c) => (c.id === criaturaGuardada.id ? criaturaGuardada : c))
+        );
+      } else {
+        setCriaturas((prev) => [...prev, criaturaGuardada]);
+      }
+
+      setIsFormOpen(false);
+      setEditingId(null);
+    } catch (e) {
+      console.error(e);
+      alert("Error de conexión con el servidor");
+    }
+  }
+
+  function manejarEditar(c: Criatura) {
+    setEditingId(c.id);
+    setForm({
+      nombre: c.nombre,
+      tipo: c.tipo,
+      nivelPoder: c.nivelPoder,
+      entrenada: c.entrenada ? "si" : "no",
+    });
+    setIsFormOpen(true);
+  }
+
+  // Solo Maestro puede eliminar
+  async function manejarEliminar(id: string) {
+    if (!confirm("¿Seguro que quieres eliminar esta criatura?")) return;
+
+    try {
+      const res = await fetch(`/api/creatures/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        console.error(await res.text());
+        alert("Error al eliminar la criatura");
+        return;
+      }
+
+      setCriaturas((prev) => prev.filter((c) => c.id !== id));
+    } catch (e) {
+      console.error(e);
+      alert("Error de conexión con el servidor");
+    }
+  }
+
+  // ================================
+  //   VISTA
+  // ================================
 
   return (
-    <main className={styles.page}>
-      {/* Panel lateral con imagen del maestro */}
-      <aside className={styles.imagePanel} />
+    <div className={styles.page}>
+      {/* Panel de imagen igual que en cuidador */}
+      <div className={styles.imagePanel}></div>
 
       {/* Panel principal */}
-      <section className={styles.mainPanel}>
-        {/* Navegación superior */}
+      <div className={styles.mainPanel}>
         <header className={styles.header}>
+          <h1 className={styles.title}>El santuario</h1>
+
           <nav className={styles.nav}>
-            <button
-              type="button"
-              className={`${styles.navItem} ${styles.navItemActive}`}
+            <Link
+              href={`/${locale}/maestro/santuario`}
+              className={styles.navItemActive}
             >
               Mis criaturas
-            </button>
+            </Link>
             <Link
               href={`/${locale}/maestro/perfil`}
               className={styles.navItem}
             >
               Mi perfil
             </Link>
-            <Link href={`/${locale}/login`} className={styles.navItem}>
-              Cerrar sesión
-            </Link>
+            <span className={styles.navItem}>Cerrar sesión</span>
           </nav>
         </header>
 
-        {/* Contenido */}
-        <div className={styles.content}>
-          <div className={styles.titles}>
-            <h1 className={styles.mainTitle}>El santuario</h1>
+        <main className={styles.content}>
+          <section className={styles.intro}>
             <h2 className={styles.sectionTitle}>Mis criaturas</h2>
             <p className={styles.sectionText}>
-              Explora y gestiona todas las criaturas mágicas que has recolectado.
-              Cada una tiene habilidades únicas y características especiales.
+              Explora y gestiona todas las criaturas mágicas que has
+              recolectado. Como maestro, puedes invocarlas, entrenarlas y
+              perfeccionar su poder.
             </p>
-          </div>
+          </section>
 
-          {/* Botón principal + filtro + tabla */}
-          <div className={styles.topRow}>
+          <section className={styles.actionsRow}>
             <button
               type="button"
-              className={styles.mainButton}
-              onClick={openCreateForm}
+              className={styles.primaryButton}
+              onClick={abrirCrear}
             >
               Añadir nueva criatura
             </button>
-          </div>
+          </section>
 
-          <div className={styles.layout}>
-            {/* Panel de filtros */}
-            <aside className={styles.filterPanel}>
-              <h3 className={styles.filterTitle}>Filtrar</h3>
-              <p className={styles.filterSubtitle}>Buscar por tipo</p>
-
-              <div className={styles.filterChecks}>
-                {tipos.map((tipo) => (
-                  <label key={tipo} className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      className={styles.checkboxInput}
-                      checked={selectedTypes.includes(tipo)}
-                      onChange={() => handleFilterTypeChange(tipo)}
-                    />
-                    <span className={styles.checkboxCustom} />
-                    <span>{tipo}</span>
-                  </label>
-                ))}
-              </div>
-
-              <button type="button" className={styles.confirmButton}>
-                Confirmar
-              </button>
-            </aside>
-
-            {/* Listado de criaturas */}
-            <section className={styles.tableSection}>
-              {/* Buscador por nombre */}
-              <div className={styles.searchBlock}>
-                <span className={styles.searchLabel}>Palabra mágica</span>
-                <input
-                  className={styles.searchInput}
-                  placeholder="Nombre"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                />
-              </div>
-
-              {/* Tabla */}
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Tipo</th>
-                    <th>Nivel</th>
-                    <th>Entrenado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCreatures.map((c) => (
-                    <tr key={c.id}>
-                      <td>{c.nombre}</td>
-                      <td>{c.tipo}</td>
-                      <td>{c.nivel}</td>
-                      <td>{c.entrenada ? "Sí" : "No"}</td>
-                      <td className={styles.actionCell}>
-                        <button
-                          type="button"
-                          className={styles.iconButton}
-                          onClick={() => openEditForm(c)}
-                          aria-label="Editar"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.iconButton}
-                          onClick={() => handleDelete(c.id)}
-                          aria-label="Eliminar"
-                        >
-                          🗑️
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-
-                  {filteredCreatures.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className={styles.emptyRow}>
-                        No se han encontrado criaturas con esos filtros.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </section>
-          </div>
-
-          {/* Formulario crear/editar criatura */}
-          {showForm && (
-            <section className={styles.creator}>
-              <h3 className={styles.creatorTitle}>
-                {editingId ? "Editar criatura mágica" : "Creador de criaturas mágicas"}
+          {isFormOpen && (
+            <section className={styles.formSection}>
+              <h3 className={styles.formTitle}>
+                {editingId
+                  ? "Editar criatura mágica"
+                  : "Creador de criaturas mágicas"}
               </h3>
 
-              <form className={styles.creatorForm} onSubmit={handleSubmit}>
-                <div className={styles.creatorRow}>
-                  <label className={styles.creatorField}>
-                    <span className={styles.creatorLabel}>
-                      Nombre mágico de la criatura
-                    </span>
+              <form className={styles.form} onSubmit={manejarSubmit}>
+                <div className={styles.formRow}>
+                  <label className={styles.label}>
+                    Nombre mágico de la criatura
                     <input
-                      className={styles.creatorInput}
+                      className={styles.input}
                       type="text"
-                      value={formNombre}
-                      onChange={(e) => setFormNombre(e.target.value)}
+                      value={form.nombre}
+                      onChange={(e) =>
+                        manejarCambio("nombre", e.target.value)
+                      }
                       placeholder="Introduce el nombre de la criatura"
-                      required
                     />
                   </label>
 
-                  <label className={styles.creatorField}>
-                    <span className={styles.creatorLabel}>Tipo de criatura</span>
-                    <div className={styles.selectWrapper}>
-                      <select
-                        className={styles.creatorInput}
-                        value={formTipo}
-                        onChange={(e) =>
-                          setFormTipo(e.target.value as CreatureType)
-                        }
-                      >
-                        {tipos.map((tipo) => (
-                          <option key={tipo} value={tipo}>
-                            {tipo}
-                          </option>
-                        ))}
-                      </select>
-                      <span className={styles.selectIcon}>⌄</span>
-                    </div>
+                  <label className={styles.label}>
+                    Tipo de criatura
+                    <select
+                      className={styles.input}
+                      value={form.tipo}
+                      onChange={(e) =>
+                        manejarCambio(
+                          "tipo",
+                          e.target.value as TipoCriatura | ""
+                        )
+                      }
+                    >
+                      <option value="">Selecciona un tipo</option>
+                      <option value="dragon">Dragón</option>
+                      <option value="fenix">Fénix</option>
+                      <option value="golem">Golem</option>
+                      <option value="vampiro">Vampiro</option>
+                      <option value="unicornio">Unicornio</option>
+                    </select>
                   </label>
                 </div>
 
-                <div className={styles.creatorRow}>
-                  <label className={styles.creatorFieldWide}>
-                    <span className={styles.creatorLabel}>Nivel de poder</span>
+                <div className={styles.formRow}>
+                  <label className={styles.label}>
+                    Nivel de poder
                     <input
-                      className={styles.creatorInput}
+                      className={styles.input}
                       type="text"
-                      value={formNivel}
-                      onChange={(e) => setFormNivel(e.target.value)}
-                      placeholder="I, II, III, maestro arcano..."
+                      value={form.nivelPoder}
+                      onChange={(e) =>
+                        manejarCambio("nivelPoder", e.target.value)
+                      }
+                      placeholder="I, II, III, 3º, etc."
                     />
                   </label>
 
-                  <div className={styles.creatorFieldSmall}>
-                    <span className={styles.creatorLabel}>¿Entrenada?</span>
-                    <div className={styles.checkboxGroup}>
-                      <label className={styles.checkboxLabel}>
+                  <div className={styles.label}>
+                    ¿Entrenada?
+                    <div className={styles.radioGroup}>
+                      <label className={styles.radioLabel}>
                         <input
                           type="radio"
-                          className={styles.checkboxInput}
-                          checked={formEntrenada === "si"}
-                          onChange={() => setFormEntrenada("si")}
+                          name="entrenada"
+                          checked={form.entrenada === "si"}
+                          onChange={() => manejarCambio("entrenada", "si")}
                         />
-                        <span className={styles.checkboxCustom} />
-                        <span>Sí</span>
+                        Sí
                       </label>
-                      <label className={styles.checkboxLabel}>
+                      <label className={styles.radioLabel}>
                         <input
                           type="radio"
-                          className={styles.checkboxInput}
-                          checked={formEntrenada === "no"}
-                          onChange={() => setFormEntrenada("no")}
+                          name="entrenada"
+                          checked={form.entrenada === "no"}
+                          onChange={() => manejarCambio("entrenada", "no")}
                         />
-                        <span className={styles.checkboxCustom} />
-                        <span>No</span>
+                        No
                       </label>
                     </div>
                   </div>
                 </div>
 
-                <div className={styles.creatorButtons}>
+                <div className={styles.formActions}>
                   <button
                     type="button"
-                    className={`${styles.buttonSecondary}`}
-                    onClick={() => setShowForm(false)}
+                    className={styles.secondaryButton}
+                    onClick={() => {
+                      setIsFormOpen(false);
+                      setEditingId(null);
+                    }}
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className={styles.button}>
+                  <button type="submit" className={styles.primaryButton}>
                     {editingId ? "Guardar cambios" : "Registrar criatura"}
                   </button>
                 </div>
               </form>
             </section>
           )}
-        </div>
-      </section>
-    </main>
+
+          <section className={styles.tableSection}>
+            {loading && <p>Cargando criaturas...</p>}
+            {error && <p className={styles.error}>{error}</p>}
+
+            {!loading && !error && (
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Nivel</th>
+                    <th>Entrenada</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {criaturas.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className={styles.emptyRow}>
+                        Aún no has registrado ninguna criatura como maestro.
+                      </td>
+                    </tr>
+                  ) : (
+                    criaturas.map((c) => (
+                      <tr key={c.id}>
+                        <td>{c.nombre}</td>
+                        <td>{c.tipo}</td>
+                        <td>{c.nivelPoder}</td>
+                        <td>{c.entrenada ? "Sí" : "No"}</td>
+                        <td className={styles.actionsCell}>
+                          <button
+                            type="button"
+                            className={styles.iconButton}
+                            onClick={() => manejarEditar(c)}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.iconButtonDelete}
+                            onClick={() => manejarEliminar(c.id)}
+                          >
+                            🗑️
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </main>
+      </div>
+    </div>
   );
 }

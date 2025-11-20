@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 export default function MaestroPerfilPage() {
   const { locale } = useParams() as { locale: string };
 
-  // De momento el total es fijo (puedes sincronizarlo luego con el santuario)
+  
   const totalCriaturas = 5;
 
   return (

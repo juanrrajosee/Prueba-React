@@ -333,8 +333,7 @@ $light: #777777;
   }
 }
 
-/* Asumo que ya tienes las VARIABLES, LAYOUT GENERAL, NAV y TITULOS
-   iguales a las de cuidador, así que añado solo lo nuevo. */
+
 
 /* ================================
    BOTONES Y DISTRIBUCIÓN
@@ -622,4 +621,117 @@ $light: #777777;
   }
 }
 
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+
+.title {
+  @extend .mainTitle;
+  margin: 0;
+}
+
+
+.intro {
+  max-width: 640px;
+  margin-bottom: 2.5rem;
+}
+
+
+.actionsRow {
+  margin-bottom: 2rem;
+}
+
+
+.primaryButton {
+  @extend .mainButton;
+}
+
+
+.secondaryButton {
+  @extend .mainButton;
+  background: #f5f1ee;
+  color: $dark;
+  box-shadow: none;
+
+  &:hover {
+    background: #ebe3dd;
+  }
+}
+
+
+.formSection {
+  margin-top: 2rem;
+}
+
+
+.formTitle {
+  @extend .creatorTitle;
+}
+
+
+.form {
+  @extend .creatorForm;
+}
+
+.formRow {
+  @extend .creatorRow;
+}
+
+.label {
+  @extend .creatorLabel;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.input {
+  @extend .creatorInput;
+}
+
+
+.radioGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.radioLabel {
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+  color: $dark;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+
+.formActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Errores de carga */
+.error {
+  color: #c0392b;
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+}
+
+
+.actionsCell {
+  @extend .actionCell;
+}
+
+.iconButtonDelete {
+  @extend .iconButton;
+  color: #c0392b;
+}
 
