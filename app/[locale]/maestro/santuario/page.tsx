@@ -168,7 +168,7 @@ export default function MaestroSantuarioPage() {
 
   return (
     <div className={styles.page}>
-      {/* Panel de imagen igual que en cuidador */}
+      {/* Panel de imagen */}
       <div className={styles.imagePanel}></div>
 
       {/* Panel principal */}

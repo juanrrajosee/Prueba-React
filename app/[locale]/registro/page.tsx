@@ -7,6 +7,16 @@ import styles from "./registro.module.scss";
 
 type Role = "CUIDADOR" | "MAESTRO";
 
+// Regex de validación de contraseña:
+// - Entre 8 y 24 caracteres
+// - Al menos una mayúscula
+// - Al menos un número
+// - Solo letras y números
+const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)[A-Za-z0-9]{8,24}$/;
+
+// Regex sencilla para validar email
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function RegistroPage() {
   const params = useParams<{ locale: string }>();
   const router = useRouter();
@@ -20,13 +30,68 @@ export default function RegistroPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+
+  //   VALIDACIÓN DEL FORMULARIO
+ 
+  function validarFormulario(): boolean {
+    setError(null);
+
+    // Nombre mágico
+    if (!nombreMagico || nombreMagico.trim().length === 0) {
+      setError("El nombre mágico es obligatorio.");
+      return false;
+    }
+
+    if (nombreMagico.length > 30) {
+      setError("El nombre mágico puede tener como máximo 30 caracteres.");
+      return false;
+    }
+
+    // Correo mágico
+    if (!email || email.trim().length === 0) {
+      setError("El correo mágico es obligatorio.");
+      return false;
+    }
+
+    if (email.length > 40) {
+      setError("El correo mágico puede tener como máximo 40 caracteres.");
+      return false;
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      setError("Introduce un correo mágico válido.");
+      return false;
+    }
+
+    // Palabra mágica (contraseña)
+    if (!password) {
+      setError("La palabra mágica es obligatoria.");
+      return false;
+    }
+
+    if (!PASSWORD_REGEX.test(password)) {
+      setError(
+        "La palabra mágica debe tener entre 8 y 24 caracteres, al menos una mayúscula y al menos un número (solo letras y números)."
+      );
+      return false;
+    }
+
+    // Rol
+    if (rol !== "CUIDADOR" && rol !== "MAESTRO") {
+      setError("Debes seleccionar un rol válido.");
+      return false;
+    }
+
+    return true;
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (!nombreMagico || !email || !password) {
-      setError("Rellena todos los campos");
+    // Primero validamos en el cliente
+    if (!validarFormulario()) {
       return;
     }
 
@@ -52,7 +117,9 @@ export default function RegistroPage() {
         return;
       }
 
-      setSuccess("Cuenta creada con éxito. Redirigiendo al inicio de sesión...");
+      setSuccess(
+        "Cuenta creada con éxito. Redirigiendo al inicio de sesión..."
+      );
       setLoading(false);
 
       setTimeout(() => {
@@ -92,6 +159,7 @@ export default function RegistroPage() {
                 type="text"
                 placeholder="Introduce tu nombre mágico"
                 value={nombreMagico}
+                maxLength={30} // límite duro en el input
                 onChange={(e) => setNombreMagico(e.target.value)}
               />
             </label>
@@ -104,6 +172,7 @@ export default function RegistroPage() {
                 type="email"
                 placeholder="tunombre@bestiario.com"
                 value={email}
+                maxLength={40} // límite duro en el input
                 onChange={(e) => setEmail(e.target.value)}
               />
             </label>
@@ -129,6 +198,7 @@ export default function RegistroPage() {
                 type="password"
                 placeholder="Introduce tu palabra mágica"
                 value={password}
+                maxLength={24} // límite máximo de longitud
                 onChange={(e) => setPassword(e.target.value)}
               />
             </label>
