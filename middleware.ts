@@ -1,12 +1,12 @@
-import createMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./i18n";
+// middleware.ts
+import { auth } from "@/lib/auth";
 
-export default createMiddleware({
-  locales,
-  defaultLocale,
+export default auth((req) => {
 });
 
 export const config = {
-  // Ignora api, _next, _vercel y cualquier archivo estático con extensión
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  matcher: [
+    "/:locale/cuidador/:path*",
+    "/:locale/maestro/:path*",
+  ],
 };

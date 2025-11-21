@@ -184,3 +184,26 @@ $light: #777777;
     padding: 2rem;
   }
 }
+
+.error {
+  margin-top: 0.5rem;
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+  color: #c0392b;
+}
+
+.success {
+  margin-top: 0.5rem;
+  font-family: var(--font-sedan);
+  font-size: 0.9rem;
+  color: #27ae60;
+}
+
+.linkHighlight {
+  color: $primary;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
