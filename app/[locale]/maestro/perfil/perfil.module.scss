@@ -1,6 +1,4 @@
-/* ================================
-   VARIABLES — Colores y fuentes
-================================ */
+/* VARIABLES — Colores y fuentes */
 
 $primary: #9c5ce1;
 $primary-hover: #874acb;
@@ -8,9 +6,7 @@ $secondary: #c77e01;
 $dark: #222222;
 $light: #777777;
 
-/* ================================
-   LAYOUT GENERAL
-================================ */
+/* LAYOUT GENERAL */
 
 .page {
   display: grid;
@@ -33,9 +29,7 @@ $light: #777777;
   padding: 2.5rem 4rem;
 }
 
-/* ================================
-   CABECERA Y NAVEGACIÓN
-================================ */
+/* CABECERA Y NAVEGACIÓN */
 
 .header {
   display: flex;
@@ -68,9 +62,7 @@ $light: #777777;
   color: $dark;
 }
 
-/* ================================
-   TIPOGRAFÍA Y CONTENIDO
-================================ */
+/* TIPOGRAFÍA Y CONTENIDO*/
 
 .content {
   display: flex;
@@ -108,9 +100,7 @@ $light: #777777;
   color: $light;
 }
 
-/* ================================
-   FORMULARIO DE PERFIL
-================================ */
+/* FORMULARIO DE PERFIL*/
 
 .profileForm {
   display: flex;
@@ -165,9 +155,7 @@ $light: #777777;
   }
 }
 
-/* ================================
-   RESUMEN DEL MAESTRO
-================================ */
+/* RESUMEN DEL MAESTRO*/
 
 .masterStats {
   margin-top: 2.5rem;
@@ -194,9 +182,7 @@ $light: #777777;
   color: $primary;
 }
 
-/* ================================
-   RESPONSIVE
-================================ */
+/* RESPONSIVE */
 
 @media (max-width: 1000px) {
   .page {

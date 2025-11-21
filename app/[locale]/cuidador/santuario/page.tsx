@@ -27,9 +27,9 @@ export default function CuidadorSantuarioPage() {
 
   const tipos: TipoCriatura[] = ["dragon", "fenix", "golem", "vampiro", "unicornio"];
 
-  // ============================
+ 
   // Cargar criaturas del backend
-  // ============================
+  
   useEffect(() => {
     const load = async () => {
       try {
@@ -82,9 +82,9 @@ export default function CuidadorSantuarioPage() {
     );
   };
 
-  // ============================
+
   // Crear / actualizar criatura
-  // ============================
+  
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 

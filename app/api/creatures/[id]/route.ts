@@ -1,49 +1,75 @@
 // app/api/creatures/[id]/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { mapCreatureToApi } from "@/lib/creatures";
 import { auth } from "@/lib/auth";
+import { mapCreatureToApi } from "@/lib/creatures";
 
-type Params = { params: { id: string } };
 
-export async function PUT(req: Request, { params }: Params) {
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+
+//   EDITAR CRIATURA
+
+export async function PUT(req: NextRequest, context: RouteContext) {
+  const { id } = await context.params; // <-- aquí el cambio importante
+
   const session = await auth();
-  if (!session?.user) {
+  if (!session || !session.user || !(session.user as any).id) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const userId = (session.user as any).id;
-  const id = params.id;
 
-  const existente = await prisma.creature.findUnique({ where: { id } });
+  const userId = (session.user as any).id as string;
+  const body = await req.json();
+  const { nombre, tipo, nivelPoder, entrenada } = body;
+
+  // Comprobar que la criatura existe y es del usuario
+  const existente = await prisma.creature.findUnique({
+    where: { id },
+  });
+
   if (!existente || existente.userId !== userId) {
     return NextResponse.json({ error: "Criatura no encontrada" }, { status: 404 });
   }
 
-  const body = await req.json();
-  const { nombre, tipo, nivelPoder, entrenada } = body;
-
   const actualizada = await prisma.creature.update({
     where: { id },
-    data: { nombre, tipo, nivelPoder, entrenada: !!entrenada },
+    data: {
+      nombre,
+      tipo,
+      nivelPoder,
+      entrenada,
+    },
   });
 
   return NextResponse.json(mapCreatureToApi(actualizada));
 }
 
-export async function DELETE(req: Request, { params }: Params) {
+
+//   ELIMINAR CRIATURA
+
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  const { id } = await context.params; // <-- mismo cambio
+
   const session = await auth();
-  if (!session?.user) {
+  if (!session || !session.user || !(session.user as any).id) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
-  const userId = (session.user as any).id;
-  const id = params.id;
 
-  const existente = await prisma.creature.findUnique({ where: { id } });
+  const userId = (session.user as any).id as string;
+
+  const existente = await prisma.creature.findUnique({
+    where: { id },
+  });
+
   if (!existente || existente.userId !== userId) {
     return NextResponse.json({ error: "Criatura no encontrada" }, { status: 404 });
   }
 
-  await prisma.creature.delete({ where: { id } });
+  await prisma.creature.delete({
+    where: { id },
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -42,7 +42,7 @@ export const authConfig = {
           return null;
         }
 
-        // IMPORTANTE:
+       
         // Aquí comparamos en plano porque en el registro estamos guardando la contraseña sin hash.
         // Para un proyecto real usaríamos bcrypt.compare.
         if (user.password !== password) {

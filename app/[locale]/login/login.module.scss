@@ -1,6 +1,4 @@
-/* ================================
-   VARIABLES — Colores y fuentes
-================================ */
+/* VARIABLES — Colores y fuentes */
 
 $primary: #9c5ce1;
 $primary-hover: #874acb;
@@ -8,9 +6,7 @@ $secondary: #c77e01;
 $dark: #222222;
 $light: #777777;
 
-/* ================================
-   LAYOUT GENERAL
-================================ */
+/* LAYOUT GENERAL*/
 
 .page {
   display: grid;
@@ -39,9 +35,7 @@ $light: #777777;
   max-width: 420px;
 }
 
-/* ================================
-   TIPOGRAFÍA
-================================ */
+/* TIPOGRAFÍA */
 
 .title {
   font-family: var(--font-sedan-sc);
@@ -60,9 +54,7 @@ $light: #777777;
   margin-bottom: 2.5rem;
 }
 
-/* ================================
-   FORMULARIO
-================================ */
+/* FORMULARIO */
 
 .form {
   display: flex;
@@ -102,9 +94,7 @@ $light: #777777;
   }
 }
 
-/* ================================
-   BOTÓN
-================================ */
+/* BOTÓN */
 
 .button {
   margin-top: 0.4rem;
@@ -151,9 +141,7 @@ $light: #777777;
 }
 
 
-/* ================================
-   RESPONSIVE
-================================ */
+/*  RESPONSIVE */
 
 @media (max-width: 900px) {
   .page {

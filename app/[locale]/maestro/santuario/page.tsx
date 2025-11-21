@@ -14,9 +14,7 @@ type FormState = {
 };
 
 export default function MaestroSantuarioPage() {
-  // ================================
   //   OBTENER LOCALE DESDE LA URL
-  // ================================
   const params = useParams<{ locale: string }>();
   const locale = params.locale;
 
@@ -34,9 +32,7 @@ export default function MaestroSantuarioPage() {
     entrenada: "si",
   });
 
-  // ================================
   //   CARGAR CRIATURAS DEL BACKEND
-  // ================================
   useEffect(() => {
     async function cargar() {
       try {
@@ -57,9 +53,7 @@ export default function MaestroSantuarioPage() {
     cargar();
   }, []);
 
-  // ================================
   //   MANEJO DE FORMULARIO
-  // ================================
 
   function abrirCrear() {
     setEditingId(null);
@@ -170,9 +164,7 @@ export default function MaestroSantuarioPage() {
     }
   }
 
-  // ================================
   //   VISTA
-  // ================================
 
   return (
     <div className={styles.page}>
