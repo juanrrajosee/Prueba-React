@@ -2,7 +2,7 @@
 
 import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation"; // 👈 NUEVO
+import { useParams } from "next/navigation"; // 
 import styles from "./santuario.module.scss";
 import type { Criatura, TipoCriatura } from "@/lib/creatures";
 

@@ -18,7 +18,7 @@ export default function PerfilPage() {
         <header className={styles.header}>
           <nav className={styles.nav}>
             <Link
-              href={`/${locale}/santuario`}
+              href={`/${locale}/cuidador/santuario`}
               className={styles.navItem}
             >
               Mis criaturas
